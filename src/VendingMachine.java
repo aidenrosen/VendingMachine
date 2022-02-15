@@ -7,6 +7,7 @@ public class VendingMachine
 	static String[] snacks;
 	static double[] prices;
 	static int snackIndex;
+	static double money;
 
 	public static void main(String[] args)
 	{
@@ -14,7 +15,7 @@ public class VendingMachine
 		prices = new double[]{1.50, 1.50, 0.50, 1.00, 1.00};
 
 		input = new Scanner(System.in);
-		double money = promptMoney(input);
+		money = promptMoney(input);
 		snackIndex = promptSnack(input, snacks, prices);
 
 		if(money < prices[snackIndex])
@@ -23,31 +24,30 @@ public class VendingMachine
 
 			//If the user is broke, run the whole program again to give them another chance.
 			main(args);
+			return;
 		}
 		else confirmPurchase();
 
-
-		//TODO: Connect the user input to which snack they want with confirmation(commit 3)
-
+		System.out.printf("$%.2f is your change.%n", money);
 	}
 
 
-	public static void confirmPurchase()
+	public static boolean confirmPurchase()
 	{
-		System.out.println("Are you sure you want to buy " + snacks[snackIndex].toLowerCase() + "?  Type 'y' to confirm, 'n' to cancel.");
-		switch(input.next())
-		{
-			case "y":
-				//TODO: Subtract price of snack to amount given.  Give change and goodbye message if they have enough, give error if they don't.
-				break;
-			case "n":
-				System.out.println("Transaction cancelled.  Goodbye");
-				break;
-			default:
-				System.out.println("Invalid Input.  Try again.");
-				confirmPurchase();
-				break;
+		boolean confirm = promptUser(
+				input,
+				"Are you sure you want to buy " + snacks[snackIndex].toLowerCase() + "?",
+				new String[]{"No", "Yes"}
+		) == 1; // "Yes" is second (index 1)
+
+		if (confirm) {
+			money -= prices[snackIndex];
+			System.out.println("Transaction confirmed. Enjoy your " + snacks[snackIndex].toLowerCase() + "!");
+		} else {
+			System.out.println("Transaction cancelled.  Goodbye");
 		}
+
+		return confirm;
 	}
 
 
